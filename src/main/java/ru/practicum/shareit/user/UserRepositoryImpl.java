@@ -14,7 +14,7 @@ public class UserRepositoryImpl implements UserRepository {
     @Override
     public User getUserById(Long id) {
         User user = users.get(id);
-        return user != null ? new User(user) : null;
+        return user != null ? user.toBuilder().build() : null;
     }
 
     @Override
@@ -23,7 +23,7 @@ public class UserRepositoryImpl implements UserRepository {
             user.setId(generateId());
         }
         users.put(user.getId(), user);
-        return new User(user);
+        return user.toBuilder().build();
     }
 
     @Override
