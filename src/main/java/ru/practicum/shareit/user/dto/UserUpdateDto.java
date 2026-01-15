@@ -2,7 +2,6 @@ package ru.practicum.shareit.user.dto;
 
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.Size;
-import jdk.jfr.DataAmount;
 import lombok.Builder;
 import lombok.Data;
 
