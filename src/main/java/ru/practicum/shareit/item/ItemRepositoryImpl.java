@@ -10,7 +10,7 @@ import java.util.Map;
 
 @Repository
 public class ItemRepositoryImpl implements ItemRepository {
-    private static Long id = 0L;
+    private Long id = 0L;
     private final Map<Long, Item> items = new HashMap<>();
 
     public Item getItemById(Long id) {

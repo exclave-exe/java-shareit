@@ -15,7 +15,6 @@ class UserRepositoryImplTest {
     @BeforeEach
     void setUp() throws Exception {
         userRepository = new UserRepositoryImpl();
-        resetStaticId();
     }
 
     // ---------- saveUser ----------
@@ -182,11 +181,5 @@ class UserRepositoryImplTest {
         assertTrue(userRepository.existsByEmail("user1@mail.com"));
         assertTrue(userRepository.existsByEmail("user2@mail.com"));
         assertFalse(userRepository.existsByEmail("user3@mail.com"));
-    }
-
-    private void resetStaticId() throws Exception {
-        Field idField = UserRepositoryImpl.class.getDeclaredField("id");
-        idField.setAccessible(true);
-        idField.set(null, 0L);
     }
 }

@@ -8,7 +8,7 @@ import java.util.Map;
 
 @Repository
 public class UserRepositoryImpl implements UserRepository {
-    private static Long id = 0L;
+    private Long id = 0L;
     private final Map<Long, User> users = new HashMap<>();
 
     @Override

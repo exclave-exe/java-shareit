@@ -18,7 +18,6 @@ class ItemRepositoryImplTest {
     @BeforeEach
     void setUp() throws Exception {
         itemRepository = new ItemRepositoryImpl();
-        resetStaticId();
 
         testOwner = User.builder()
                 .id(1L)
@@ -397,11 +396,5 @@ class ItemRepositoryImplTest {
 
         List<Item> resultsAgain = itemRepository.searchItems("drill");
         assertEquals("Drill", resultsAgain.getFirst().getName());
-    }
-
-    private void resetStaticId() throws Exception {
-        Field idField = ItemRepositoryImpl.class.getDeclaredField("id");
-        idField.setAccessible(true);
-        idField.set(null, 0L);
     }
 }
