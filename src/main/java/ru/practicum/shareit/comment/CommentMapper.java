@@ -1,7 +1,5 @@
 package ru.practicum.shareit.comment;
 
-import lombok.NoArgsConstructor;
-import org.springframework.context.annotation.ComponentScan;
 import org.springframework.stereotype.Component;
 import ru.practicum.shareit.comment.dto.CommentCreateDto;
 import ru.practicum.shareit.comment.dto.CommentResponseDto;

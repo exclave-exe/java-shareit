@@ -11,8 +11,10 @@ import java.util.List;
 
 @Entity
 @Table(name = "items")
-@Getter @Setter
-@NoArgsConstructor @AllArgsConstructor
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
 @Builder(toBuilder = true)
 public class Item {
     @Id
