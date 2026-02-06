@@ -6,7 +6,10 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+import ru.practicum.shareit.comment.dto.CommentCreateDto;
+import ru.practicum.shareit.comment.dto.CommentResponseDto;
 import ru.practicum.shareit.item.dto.ItemCreateDto;
+import ru.practicum.shareit.item.dto.ItemExtendedResponseDto;
 import ru.practicum.shareit.item.dto.ItemResponseDto;
 import ru.practicum.shareit.item.dto.ItemUpdateDto;
 
@@ -20,9 +23,14 @@ public class ItemController {
     private final ItemService itemService;
 
     @GetMapping("/{itemId}")
-    public ItemResponseDto getItem(@RequestHeader("X-Sharer-User-Id") @Positive Long userId,
+    public ItemExtendedResponseDto getItem(@RequestHeader("X-Sharer-User-Id") @Positive Long userId,
                                    @PathVariable @Positive Long itemId) {
         return itemService.getItem(userId, itemId);
+    }
+
+    @GetMapping()
+    public List<ItemExtendedResponseDto> getUserItems(@RequestHeader("X-Sharer-User-Id") @Positive Long userId) {
+        return itemService.getUserItems(userId);
     }
 
     @PostMapping
@@ -32,6 +40,15 @@ public class ItemController {
         return itemService.createItem(userId, itemCreateDto);
     }
 
+    @PostMapping("/{itemId}/comment")
+    @ResponseStatus(HttpStatus.CREATED)
+    public CommentResponseDto createComment(@RequestHeader("X-Sharer-User-Id") @Positive Long userId,
+                                            @PathVariable @Positive Long itemId,
+                                            @RequestBody @Valid CommentCreateDto commentCreateDto) {
+        return itemService.createComment(userId, itemId, commentCreateDto);
+    }
+
+
     @PatchMapping("/{itemId}")
     public ItemResponseDto updateItem(@RequestHeader("X-Sharer-User-Id") @Positive Long userId,
                                       @PathVariable @Positive Long itemId,
@@ -39,14 +56,9 @@ public class ItemController {
         return itemService.updateItem(userId, itemId, itemUpdateDto);
     }
 
-    @GetMapping()
-    public List<ItemResponseDto> getUserItems(@RequestHeader("X-Sharer-User-Id") @Positive Long userId) {
-        return itemService.getUserItems(userId);
-    }
-
     @GetMapping("/search")
     public List<ItemResponseDto> searchItems(@RequestHeader("X-Sharer-User-Id") @Positive Long userId,
-                                             @RequestParam String text) {
+                                             @RequestParam(required = false) String text) {
         return itemService.searchItems(userId, text);
     }
 }
