@@ -38,9 +38,9 @@ public class BookingServiceImpl implements BookingService {
             log.warn("Booking with id={} not found", bookingId);
             return new NotFoundException("Booking with id=" + bookingId + " not found");
         });
-        Long ItemOwnerId = existingBooking.getItem().getOwner().getId();
+        Long itemOwnerId = existingBooking.getItem().getOwner().getId();
         Long bookerId = existingBooking.getBooker().getId();
-        if (!Objects.equals(userId, ItemOwnerId) && !Objects.equals(userId, bookerId)) {
+        if (!Objects.equals(userId, itemOwnerId) && !Objects.equals(userId, bookerId)) {
             throw new ConflictException("User with id=" + userId + " is not owner of booking with id=" + bookingId);
         }
 
@@ -141,7 +141,7 @@ public class BookingServiceImpl implements BookingService {
     }
 
     @Transactional
-    public BookingResponseDto approveBooking(Long userId, Long bookingId, Boolean Approved) {
+    public BookingResponseDto approveBooking(Long userId, Long bookingId, Boolean approved) {
         Booking existingBooking = bookingRepository.findByIdWithDetails(bookingId).orElseThrow(() -> {
             log.warn("Booking with id={} not found", bookingId);
             return new NotFoundException("Booking with id=" + bookingId + " not found");
@@ -155,7 +155,7 @@ public class BookingServiceImpl implements BookingService {
             throw new BadRequestException("Booking status has already been changed");
         }
 
-        existingBooking.setStatus(Approved ? BookingStatus.APPROVED : BookingStatus.REJECTED);
+        existingBooking.setStatus(approved ? BookingStatus.APPROVED : BookingStatus.REJECTED);
 
         Booking updatedBooking = bookingRepository.save(existingBooking);
         return bookingMapper.mapToResponseDto(updatedBooking);

@@ -44,10 +44,10 @@ public class ItemMapper {
     }
 
     public Item mapToItem(ItemUpdateDto itemUpdateDto) {
-        return Item.builder().
-                name(itemUpdateDto.getName()).
-                description(itemUpdateDto.getDescription()).
-                available(itemUpdateDto.getAvailable()).
-                build();
+        return Item.builder()
+                .name(itemUpdateDto.getName())
+                .description(itemUpdateDto.getDescription())
+                .available(itemUpdateDto.getAvailable())
+                .build();
     }
 }
