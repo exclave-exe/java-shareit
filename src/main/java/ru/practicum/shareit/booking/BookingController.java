@@ -11,6 +11,8 @@ import ru.practicum.shareit.booking.model.BookingState;
 
 import java.util.List;
 
+import static ru.practicum.shareit.common.Constants.HEADER_USER_ID;
+
 @RestController
 @RequestMapping(path = "/bookings")
 @RequiredArgsConstructor
@@ -20,31 +22,31 @@ public class BookingController {
     private final BookingMapper bookingMapper;
 
     @GetMapping("/{bookingId}")
-    public BookingResponseDto getBooking(@RequestHeader("X-Sharer-User-Id") @Positive Long userId,
+    public BookingResponseDto getBooking(@RequestHeader(HEADER_USER_ID) @Positive Long userId,
                                          @PathVariable @Positive Long bookingId) {
         return bookingServiceImpl.getBooking(userId, bookingId);
     }
 
     @GetMapping
-    public List<BookingResponseDto> getBookerBookings(@RequestHeader("X-Sharer-User-Id") @Positive Long userId,
+    public List<BookingResponseDto> getBookerBookings(@RequestHeader(HEADER_USER_ID) @Positive Long userId,
                                                       @RequestParam(defaultValue = "ALL") BookingState state) {
         return bookingServiceImpl.getBookerBookings(userId, state);
     }
 
     @GetMapping("/owner")
-    public List<BookingResponseDto> getOwnerBookings(@RequestHeader("X-Sharer-User-Id") @Positive Long userId,
+    public List<BookingResponseDto> getOwnerBookings(@RequestHeader(HEADER_USER_ID) @Positive Long userId,
                                                      @RequestParam(defaultValue = "ALL") BookingState state) {
         return bookingServiceImpl.getOwnerBookings(userId, state);
     }
 
     @PostMapping
-    public BookingResponseDto createBooking(@RequestHeader("X-Sharer-User-Id") @Positive Long userId,
+    public BookingResponseDto createBooking(@RequestHeader(HEADER_USER_ID) @Positive Long userId,
                                             @RequestBody @Valid BookingCreateDto bookingCreateDto) {
         return bookingServiceImpl.createBooking(userId, bookingCreateDto);
     }
 
     @PatchMapping("/{bookingId}")
-    public BookingResponseDto approveBooking(@RequestHeader("X-Sharer-User-Id") @Positive Long userId,
+    public BookingResponseDto approveBooking(@RequestHeader(HEADER_USER_ID) @Positive Long userId,
                                              @PathVariable @Positive Long bookingId,
                                              @RequestParam Boolean approved) {
         return bookingServiceImpl.approveBooking(userId, bookingId, approved);

@@ -15,6 +15,8 @@ import ru.practicum.shareit.item.dto.ItemUpdateDto;
 
 import java.util.List;
 
+import static ru.practicum.shareit.common.Constants.HEADER_USER_ID;
+
 @RestController
 @RequestMapping("/items")
 @RequiredArgsConstructor
@@ -23,26 +25,26 @@ public class ItemController {
     private final ItemService itemService;
 
     @GetMapping("/{itemId}")
-    public ItemExtendedResponseDto getItem(@RequestHeader("X-Sharer-User-Id") @Positive Long userId,
+    public ItemExtendedResponseDto getItem(@RequestHeader(HEADER_USER_ID) @Positive Long userId,
                                            @PathVariable @Positive Long itemId) {
         return itemService.getItem(userId, itemId);
     }
 
     @GetMapping()
-    public List<ItemExtendedResponseDto> getUserItems(@RequestHeader("X-Sharer-User-Id") @Positive Long userId) {
+    public List<ItemExtendedResponseDto> getUserItems(@RequestHeader(HEADER_USER_ID) @Positive Long userId) {
         return itemService.getUserItems(userId);
     }
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public ItemResponseDto createItem(@RequestHeader("X-Sharer-User-Id") @Positive Long userId,
+    public ItemResponseDto createItem(@RequestHeader(HEADER_USER_ID) @Positive Long userId,
                                       @RequestBody @Valid ItemCreateDto itemCreateDto) {
         return itemService.createItem(userId, itemCreateDto);
     }
 
     @PostMapping("/{itemId}/comment")
     @ResponseStatus(HttpStatus.CREATED)
-    public CommentResponseDto createComment(@RequestHeader("X-Sharer-User-Id") @Positive Long userId,
+    public CommentResponseDto createComment(@RequestHeader(HEADER_USER_ID) @Positive Long userId,
                                             @PathVariable @Positive Long itemId,
                                             @RequestBody @Valid CommentCreateDto commentCreateDto) {
         return itemService.createComment(userId, itemId, commentCreateDto);
@@ -50,14 +52,14 @@ public class ItemController {
 
 
     @PatchMapping("/{itemId}")
-    public ItemResponseDto updateItem(@RequestHeader("X-Sharer-User-Id") @Positive Long userId,
+    public ItemResponseDto updateItem(@RequestHeader(HEADER_USER_ID) @Positive Long userId,
                                       @PathVariable @Positive Long itemId,
                                       @RequestBody @Valid ItemUpdateDto itemUpdateDto) {
         return itemService.updateItem(userId, itemId, itemUpdateDto);
     }
 
     @GetMapping("/search")
-    public List<ItemResponseDto> searchItems(@RequestHeader("X-Sharer-User-Id") @Positive Long userId,
+    public List<ItemResponseDto> searchItems(@RequestHeader(HEADER_USER_ID) @Positive Long userId,
                                              @RequestParam(required = false) String text) {
         return itemService.searchItems(userId, text);
     }
