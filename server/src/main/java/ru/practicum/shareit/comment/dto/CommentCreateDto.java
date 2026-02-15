@@ -16,4 +16,3 @@ public class CommentCreateDto {
     @Size(min = 1, message = "Comment cannot be less than one character")
     private String text;
 }
-
