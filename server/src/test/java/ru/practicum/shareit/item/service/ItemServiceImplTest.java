@@ -1,7 +1,6 @@
 package ru.practicum.shareit.item.service;
 
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -19,7 +18,10 @@ import ru.practicum.shareit.comment.model.Comment;
 import ru.practicum.shareit.comment.repository.CommentRepository;
 import ru.practicum.shareit.exception.BadRequestException;
 import ru.practicum.shareit.exception.NotFoundException;
-import ru.practicum.shareit.item.dto.*;
+import ru.practicum.shareit.item.dto.ItemCreateDto;
+import ru.practicum.shareit.item.dto.ItemExtendedResponseDto;
+import ru.practicum.shareit.item.dto.ItemResponseDto;
+import ru.practicum.shareit.item.dto.ItemUpdateDto;
 import ru.practicum.shareit.item.mapper.ItemMapper;
 import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.item.repository.ItemRepository;
@@ -136,7 +138,7 @@ class ItemServiceImplTest {
 
     @Test
     void getItem_WhenUserIsOwner_ShouldReturnItemWithBookings() {
-        
+
         when(itemRepository.findByIdWithDetails(1L)).thenReturn(Optional.of(item));
 
         ItemExtendedResponseDto extendedDto = ItemExtendedResponseDto.builder()
@@ -163,10 +165,10 @@ class ItemServiceImplTest {
         when(bookingMapper.mapToShortDto(lastBooking)).thenReturn(lastBookingDto);
         when(bookingMapper.mapToShortDto(nextBooking)).thenReturn(nextBookingDto);
 
-        
+
         ItemExtendedResponseDto result = itemService.getItem(1L, 1L);
 
-      
+
         assertNotNull(result);
         assertEquals(1L, result.getId());
         assertEquals("Test Item", result.getName());
@@ -177,7 +179,7 @@ class ItemServiceImplTest {
 
     @Test
     void getItem_WhenUserIsNotOwner_ShouldReturnItemWithoutBookings() {
-        
+
         when(itemRepository.findByIdWithDetails(1L)).thenReturn(Optional.of(item));
 
         ItemExtendedResponseDto extendedDto = ItemExtendedResponseDto.builder()
@@ -188,10 +190,10 @@ class ItemServiceImplTest {
                 .build();
         when(itemMapper.mapToExtendedResponseDto(item)).thenReturn(extendedDto);
 
-        
+
         ItemExtendedResponseDto result = itemService.getItem(2L, 1L);
 
-      
+
         assertNotNull(result);
         assertEquals(1L, result.getId());
         assertNull(result.getLastBooking());
@@ -239,10 +241,10 @@ class ItemServiceImplTest {
         when(bookingMapper.mapToShortDto(lastBooking)).thenReturn(lastBookingDto);
         when(bookingMapper.mapToShortDto(nextBooking)).thenReturn(nextBookingDto);
 
-        
+
         List<ItemExtendedResponseDto> result = itemService.getUserItems(1L);
 
-      
+
         assertNotNull(result);
         assertEquals(1, result.size());
         assertEquals(1L, result.get(0).getId());
@@ -396,7 +398,7 @@ class ItemServiceImplTest {
 
     @Test
     void createComment_WhenUserNotFound_ShouldThrowNotFoundException() {
-        
+
         CommentCreateDto commentCreateDto = new CommentCreateDto();
         when(userRepository.existsById(99L)).thenReturn(false);
 
@@ -407,7 +409,7 @@ class ItemServiceImplTest {
 
     @Test
     void createComment_WhenItemNotFound_ShouldThrowNotFoundException() {
-        
+
         CommentCreateDto commentCreateDto = new CommentCreateDto();
         when(userRepository.existsById(2L)).thenReturn(true);
         when(itemRepository.existsById(99L)).thenReturn(false);
@@ -560,7 +562,7 @@ class ItemServiceImplTest {
 
     @Test
     void updateItem_WhenUserIsNotOwner_ShouldThrowNotFoundException() {
-        
+
         ItemUpdateDto updateDto = ItemUpdateDto.builder().build();
         when(itemRepository.findById(1L)).thenReturn(Optional.of(item));
 
@@ -572,7 +574,7 @@ class ItemServiceImplTest {
 
     @Test
     void updateItem_WhenItemNotFound_ShouldThrowNotFoundException() {
-        
+
         ItemUpdateDto updateDto = ItemUpdateDto.builder().build();
         when(itemRepository.findById(99L)).thenReturn(Optional.empty());
 
@@ -583,7 +585,7 @@ class ItemServiceImplTest {
 
     @Test
     void searchItems_WithValidQuery_ShouldReturnResults() {
-        
+
         String searchText = "test";
         List<Item> items = List.of(item);
 
@@ -597,10 +599,10 @@ class ItemServiceImplTest {
                 .build();
         when(itemMapper.mapToResponseDto(item)).thenReturn(responseDto);
 
-        
+
         List<ItemResponseDto> result = itemService.searchItems(1L, searchText);
 
-      
+
         assertNotNull(result);
         assertEquals(1, result.size());
         assertEquals("Test Item", result.get(0).getName());
@@ -609,10 +611,10 @@ class ItemServiceImplTest {
 
     @Test
     void searchItems_WithEmptyQuery_ShouldReturnEmptyList() {
-        
+
         List<ItemResponseDto> result = itemService.searchItems(1L, "");
 
-      
+
         assertNotNull(result);
         assertTrue(result.isEmpty());
         verify(itemRepository, never()).searchAvailableItemsByText(anyString());
@@ -620,10 +622,10 @@ class ItemServiceImplTest {
 
     @Test
     void searchItems_WithNullQuery_ShouldReturnEmptyList() {
-        
+
         List<ItemResponseDto> result = itemService.searchItems(1L, null);
 
-      
+
         assertNotNull(result);
         assertTrue(result.isEmpty());
         verify(itemRepository, never()).searchAvailableItemsByText(anyString());
@@ -631,10 +633,10 @@ class ItemServiceImplTest {
 
     @Test
     void searchItems_WithBlankQuery_ShouldReturnEmptyList() {
-        
+
         List<ItemResponseDto> result = itemService.searchItems(1L, "   ");
 
-      
+
         assertNotNull(result);
         assertTrue(result.isEmpty());
         verify(itemRepository, never()).searchAvailableItemsByText(anyString());
@@ -642,14 +644,14 @@ class ItemServiceImplTest {
 
     @Test
     void searchItems_WhenNoItemsFound_ShouldReturnEmptyList() {
-        
+
         String searchText = "nonexistent";
         when(itemRepository.searchAvailableItemsByText(searchText)).thenReturn(Collections.emptyList());
 
-        
+
         List<ItemResponseDto> result = itemService.searchItems(1L, searchText);
 
-      
+
         assertNotNull(result);
         assertTrue(result.isEmpty());
         verify(itemRepository).searchAvailableItemsByText(searchText);
