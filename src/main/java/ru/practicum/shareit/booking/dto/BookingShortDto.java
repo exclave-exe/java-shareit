@@ -5,5 +5,7 @@ import lombok.Data;
 
 @Data
 @Builder
-public class BookingRequestDto {
+public class BookingShortDto {
+    private Long id;
+    private Long bookerId;
 }

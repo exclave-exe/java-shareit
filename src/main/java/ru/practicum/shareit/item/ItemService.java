@@ -1,6 +1,9 @@
 package ru.practicum.shareit.item;
 
+import ru.practicum.shareit.comment.dto.CommentCreateDto;
+import ru.practicum.shareit.comment.dto.CommentResponseDto;
 import ru.practicum.shareit.item.dto.ItemCreateDto;
+import ru.practicum.shareit.item.dto.ItemExtendedResponseDto;
 import ru.practicum.shareit.item.dto.ItemResponseDto;
 import ru.practicum.shareit.item.dto.ItemUpdateDto;
 
@@ -8,13 +11,15 @@ import java.util.List;
 
 public interface ItemService {
 
-    ItemResponseDto getItem(Long userId, Long itemId);
+    ItemExtendedResponseDto getItem(Long userId, Long itemId);
 
-    ItemResponseDto createItem(Long userId, ItemCreateDto userCreateDto);
+    ItemResponseDto createItem(Long userId, ItemCreateDto itemCreateDto);
 
-    ItemResponseDto updateItem(Long userId, Long itemId, ItemUpdateDto userUpdateDto);
+    ItemResponseDto updateItem(Long userId, Long itemId, ItemUpdateDto itemUpdateDto);
 
-    List<ItemResponseDto> getUserItems(Long userId);
+    CommentResponseDto createComment(Long userId, Long itemId, CommentCreateDto commentCreateDto);
+
+    List<ItemExtendedResponseDto> getUserItems(Long userId);
 
     List<ItemResponseDto> searchItems(Long userId, String searchQuery);
 }

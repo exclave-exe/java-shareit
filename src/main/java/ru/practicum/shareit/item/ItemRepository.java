@@ -1,16 +1,34 @@
 package ru.practicum.shareit.item;
 
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import ru.practicum.shareit.item.model.Item;
 
 import java.util.List;
+import java.util.Optional;
 
-public interface ItemRepository {
+public interface ItemRepository extends JpaRepository<Item, Long> {
 
-    Item getItemById(Long id);
+    @Query("SELECT DISTINCT i FROM Item i " +
+            "JOIN FETCH i.owner " +
+            "LEFT JOIN FETCH i.request " +
+            "LEFT JOIN FETCH i.comments c " +
+            "LEFT JOIN FETCH c.author " +
+            "WHERE i.owner.id = :ownerId")
+    List<Item> findByOwnerIdWithDetails(@Param("ownerId") Long ownerId);
 
-    Item saveItem(Item item);
+    @Query("SELECT DISTINCT i FROM Item i " +
+            "JOIN FETCH i.owner " +
+            "LEFT JOIN FETCH i.request " +
+            "WHERE i.available = true " +
+            "AND (LOWER(i.name) LIKE LOWER(CONCAT('%', :text, '%')) " +
+            "OR LOWER(i.description) LIKE LOWER(CONCAT('%', :text, '%')))")
+    List<Item> searchAvailableItemsByText(@Param("text") String text);
 
-    List<Item> getUserItems(Long userId);
-
-    List<Item> searchItems(String searchQuery);
+    @Query("SELECT DISTINCT i FROM Item i " +
+            "JOIN FETCH i.owner " +
+            "LEFT JOIN FETCH i.request " +
+            "WHERE i.id = :id")
+    Optional<Item> findByIdWithDetails(@Param("id") Long itemId);
 }
