@@ -1,16 +1,18 @@
-package ru.practicum.shareit.request;
+package ru.practicum.shareit.request.service;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import ru.practicum.shareit.exception.NotFoundException;
 import ru.practicum.shareit.item.mapper.ItemMapper;
-import ru.practicum.shareit.item.repository.ItemRepository;
 import ru.practicum.shareit.item.model.Item;
+import ru.practicum.shareit.item.repository.ItemRepository;
 import ru.practicum.shareit.request.dto.ItemRequestCreateDto;
 import ru.practicum.shareit.request.dto.ItemRequestExtendedResponseDto;
 import ru.practicum.shareit.request.dto.ItemRequestResponseDto;
+import ru.practicum.shareit.request.mapper.ItemRequestMapper;
 import ru.practicum.shareit.request.model.ItemRequest;
+import ru.practicum.shareit.request.repository.ItemRequestRepository;
 import ru.practicum.shareit.user.repository.UserRepository;
 
 import java.time.LocalDateTime;
@@ -47,7 +49,7 @@ public class ItemRequestService {
     public List<ItemRequestExtendedResponseDto> getAllRequestorItemRequests(Long requestorId) {
         validateUserExists(requestorId);
 
-        List<ItemRequest> allUserRequests = itemRequestRepository.findByRequestor_Id(requestorId);
+        List<ItemRequest> allUserRequests = itemRequestRepository.findByRequestor_IdOrderByCreatedDesc(requestorId);
 
         if (allUserRequests.isEmpty()) {
             return List.of();

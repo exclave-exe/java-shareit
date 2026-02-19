@@ -2,7 +2,7 @@ package ru.practicum.shareit.item.dto;
 
 import lombok.Builder;
 import lombok.Data;
-import ru.practicum.shareit.booking.dto.BookingShortDto;
+import ru.practicum.shareit.booking.dto.BookingShortResponseDto;
 import ru.practicum.shareit.comment.dto.CommentResponseDto;
 
 import java.util.List;
@@ -14,7 +14,7 @@ public class ItemExtendedResponseDto {
     private String name;
     private String description;
     private Boolean available;
-    private BookingShortDto lastBooking;
-    private BookingShortDto nextBooking;
+    private BookingShortResponseDto lastBooking;
+    private BookingShortResponseDto nextBooking;
     private List<CommentResponseDto> comments;
 }

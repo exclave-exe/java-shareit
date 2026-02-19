@@ -1,4 +1,4 @@
-package ru.practicum.shareit.item.dto;
+package ru.practicum.shareit.Item.dto;
 
 import jakarta.validation.constraints.Size;
 import lombok.Builder;
