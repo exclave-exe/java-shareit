@@ -36,263 +36,243 @@ class BookingControllerTest {
     @MockBean
     private BookingClient bookingClient;
 
-    @Nested
-    class GetBooking {
+    @Test
+    @SneakyThrows
+    void getBooking_whenHeaderAndPathValid_thenReturnOk() {
 
-        @Test
-        @SneakyThrows
-        void getBooking_whenHeaderAndPathValid_thenReturnOk() {
+        when(bookingClient.getBooking(1L, 1L))
+                .thenReturn(ResponseEntity.ok(Map.of(
+                        "id", 1L,
+                        "status", "APPROVED"
+                )));
 
-            when(bookingClient.getBooking(1L, 1L))
-                    .thenReturn(ResponseEntity.ok(Map.of(
-                            "id", 1L,
-                            "status", "APPROVED"
-                    )));
-
-            mockMvc.perform(get("/bookings/{bookingId}", 1L)
-                            .header(HEADER_USER_ID, 1L))
-                    .andExpect(status().isOk())
-                    .andExpect(jsonPath("$.id").value(1L))
-                    .andExpect(jsonPath("$.status").value("APPROVED"));
-        }
-
-        @Test
-        @SneakyThrows
-        void getBooking_whenHeaderOrPathInvalid_thenReturnBadRequest() {
-
-            Assertions.assertAll(
-                    () -> mockMvc.perform(get("/bookings/{bookingId}", 1L)
-                                    .header(HEADER_USER_ID, -1L))
-                            .andExpect(status().isBadRequest()),
-
-                    () -> mockMvc.perform(get("/bookings/{bookingId}", -1L)
-                                    .header(HEADER_USER_ID, 1L))
-                            .andExpect(status().isBadRequest()),
-
-                    () -> mockMvc.perform(get("/bookings/{bookingId}", 0L)
-                                    .header(HEADER_USER_ID, 1L))
-                            .andExpect(status().isBadRequest())
-            );
-
-            verifyNoInteractions(bookingClient);
-        }
+        mockMvc.perform(get("/bookings/{bookingId}", 1L)
+                        .header(HEADER_USER_ID, 1L))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.id").value(1L))
+                .andExpect(jsonPath("$.status").value("APPROVED"));
     }
 
-    @Nested
-    class GetBookerBookings {
+    @Test
+    @SneakyThrows
+    void getBooking_whenHeaderOrPathInvalid_thenReturnBadRequest() {
 
-        @Test
-        @SneakyThrows
-        void getBookerBookings_whenHeaderValid_thenReturnOk() {
+        Assertions.assertAll(
+                () -> mockMvc.perform(get("/bookings/{bookingId}", 1L)
+                                .header(HEADER_USER_ID, -1L))
+                        .andExpect(status().isBadRequest()),
 
-            when(bookingClient.getBookerBookings(1L, BookingState.ALL))
-                    .thenReturn(ResponseEntity.ok(List.of(Map.of("id", 1L))));
+                () -> mockMvc.perform(get("/bookings/{bookingId}", -1L)
+                                .header(HEADER_USER_ID, 1L))
+                        .andExpect(status().isBadRequest()),
 
-            mockMvc.perform(get("/bookings")
-                            .header(HEADER_USER_ID, 1L)
-                            .param("state", "ALL"))
-                    .andExpect(status().isOk())
-                    .andExpect(jsonPath("$[0].id").value(1L));
-        }
+                () -> mockMvc.perform(get("/bookings/{bookingId}", 0L)
+                                .header(HEADER_USER_ID, 1L))
+                        .andExpect(status().isBadRequest())
+        );
 
-        @Test
-        @SneakyThrows
-        void getBookerBookings_whenHeaderInvalid_thenReturnBadRequest() {
-            Assertions.assertAll(
-                    () -> mockMvc.perform(get("/bookings")
-                                    .header(HEADER_USER_ID, -1L))
-                            .andExpect(status().isBadRequest()),
-
-                    () -> mockMvc.perform(get("/bookings")
-                                    .header(HEADER_USER_ID, 0L))
-                            .andExpect(status().isBadRequest())
-            );
-
-            verifyNoInteractions(bookingClient);
-        }
+        verifyNoInteractions(bookingClient);
     }
 
-    @Nested
-    class GetOwnerBookings {
+    @Test
+    @SneakyThrows
+    void getBookerBookings_whenHeaderValid_thenReturnOk() {
 
-        @Test
-        @SneakyThrows
-        void getOwnerBookings_whenHeaderValid_thenReturnOk() {
+        when(bookingClient.getBookerBookings(1L, BookingState.ALL))
+                .thenReturn(ResponseEntity.ok(List.of(Map.of("id", 1L))));
 
-            when(bookingClient.getOwnerBookings(1L, BookingState.ALL))
-                    .thenReturn(ResponseEntity.ok(List.of(Map.of("id", 2L))));
-
-            mockMvc.perform(get("/bookings/owner")
-                            .header(HEADER_USER_ID, 1L)
-                            .param("state", "ALL"))
-                    .andExpect(status().isOk())
-                    .andExpect(jsonPath("$[0].id").value(2L));
-        }
-
-        @Test
-        @SneakyThrows
-        void getOwnerBookings_whenHeaderInvalid_thenReturnBadRequest() {
-            Assertions.assertAll(
-                    () -> mockMvc.perform(get("/bookings/owner")
-                                    .header(HEADER_USER_ID, -1L))
-                            .andExpect(status().isBadRequest()),
-
-                    () -> mockMvc.perform(get("/bookings/owner")
-                                    .header(HEADER_USER_ID, 0L))
-                            .andExpect(status().isBadRequest())
-            );
-
-            verifyNoInteractions(bookingClient);
-        }
+        mockMvc.perform(get("/bookings")
+                        .header(HEADER_USER_ID, 1L)
+                        .param("state", "ALL"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$[0].id").value(1L));
     }
 
-    @Nested
-    class CreateBooking {
+    @Test
+    @SneakyThrows
+    void getBookerBookings_whenHeaderInvalid_thenReturnBadRequest() {
+        Assertions.assertAll(
+                () -> mockMvc.perform(get("/bookings")
+                                .header(HEADER_USER_ID, -1L))
+                        .andExpect(status().isBadRequest()),
 
-        @Test
-        @SneakyThrows
-        void createBooking_whenDtoAndHeaderValid_thenReturnOk() {
+                () -> mockMvc.perform(get("/bookings")
+                                .header(HEADER_USER_ID, 0L))
+                        .andExpect(status().isBadRequest())
+        );
 
-            BookingCreateDto dto = BookingCreateDto.builder()
-                    .itemId(1L)
-                    .start(LocalDateTime.now().plusDays(1))
-                    .end(LocalDateTime.now().plusDays(2))
-                    .build();
-
-            when(bookingClient.createBooking(eq(1L), any()))
-                    .thenReturn(ResponseEntity.ok(Map.of("id", 1L)));
-
-            mockMvc.perform(post("/bookings")
-                            .header(HEADER_USER_ID, 1L)
-                            .contentType("application/json")
-                            .content(objectMapper.writeValueAsString(dto)))
-                    .andExpect(status().isOk())
-                    .andExpect(jsonPath("$.id").value(1L));
-        }
-
-        @Test
-        @SneakyThrows
-        void createBooking_whenDtoInvalid_thenReturnBadRequest() {
-
-            BookingCreateDto nullItem = BookingCreateDto.builder()
-                    .itemId(null)
-                    .start(LocalDateTime.now().plusDays(1))
-                    .end(LocalDateTime.now().plusDays(2))
-                    .build();
-
-            BookingCreateDto startPast = BookingCreateDto.builder()
-                    .itemId(1L)
-                    .start(LocalDateTime.now().minusDays(1))
-                    .end(LocalDateTime.now().plusDays(2))
-                    .build();
-
-            BookingCreateDto endPast = BookingCreateDto.builder()
-                    .itemId(1L)
-                    .start(LocalDateTime.now().plusDays(1))
-                    .end(LocalDateTime.now().minusDays(1))
-                    .build();
-
-            BookingCreateDto allNull = BookingCreateDto.builder().build();
-
-            Assertions.assertAll(
-                    () -> mockMvc.perform(post("/bookings")
-                                    .header(HEADER_USER_ID, 1L)
-                                    .contentType("application/json")
-                                    .content(objectMapper.writeValueAsString(nullItem)))
-                            .andExpect(status().isBadRequest()),
-
-                    () -> mockMvc.perform(post("/bookings")
-                                    .header(HEADER_USER_ID, 1L)
-                                    .contentType("application/json")
-                                    .content(objectMapper.writeValueAsString(startPast)))
-                            .andExpect(status().isBadRequest()),
-
-                    () -> mockMvc.perform(post("/bookings")
-                                    .header(HEADER_USER_ID, 1L)
-                                    .contentType("application/json")
-                                    .content(objectMapper.writeValueAsString(endPast)))
-                            .andExpect(status().isBadRequest()),
-
-                    () -> mockMvc.perform(post("/bookings")
-                                    .header(HEADER_USER_ID, 1L)
-                                    .contentType("application/json")
-                                    .content(objectMapper.writeValueAsString(allNull)))
-                            .andExpect(status().isBadRequest())
-            );
-
-            verifyNoInteractions(bookingClient);
-        }
-
-        @Test
-        @SneakyThrows
-        void createBooking_whenHeaderInvalid_thenReturnBadRequest() {
-            BookingCreateDto dto = BookingCreateDto.builder()
-                    .itemId(1L)
-                    .start(LocalDateTime.now().plusDays(1))
-                    .end(LocalDateTime.now().plusDays(2))
-                    .build();
-
-            Assertions.assertAll(
-                    () -> mockMvc.perform(post("/bookings")
-                                    .header(HEADER_USER_ID, -1L)
-                                    .contentType("application/json")
-                                    .content(objectMapper.writeValueAsString(dto)))
-                            .andExpect(status().isBadRequest()),
-
-                    () -> mockMvc.perform(post("/bookings")
-                                    .header(HEADER_USER_ID, 0L)
-                                    .contentType("application/json")
-                                    .content(objectMapper.writeValueAsString(dto)))
-                            .andExpect(status().isBadRequest())
-            );
-
-            verifyNoInteractions(bookingClient);
-        }
+        verifyNoInteractions(bookingClient);
     }
 
-    @Nested
-    class ApproveBooking {
+    @Test
+    @SneakyThrows
+    void getOwnerBookings_whenHeaderValid_thenReturnOk() {
 
-        @Test
-        @SneakyThrows
-        void approveBooking_whenHeaderAndPathValid_thenReturnOk() {
+        when(bookingClient.getOwnerBookings(1L, BookingState.ALL))
+                .thenReturn(ResponseEntity.ok(List.of(Map.of("id", 2L))));
 
-            when(bookingClient.approveBooking(1L, 1L, true))
-                    .thenReturn(ResponseEntity.ok("approved"));
+        mockMvc.perform(get("/bookings/owner")
+                        .header(HEADER_USER_ID, 1L)
+                        .param("state", "ALL"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$[0].id").value(2L));
+    }
 
-            mockMvc.perform(patch("/bookings/{bookingId}", 1L)
-                            .header(HEADER_USER_ID, 1L)
-                            .param("approved", "true"))
-                    .andExpect(status().isOk())
-                    .andExpect(content().string("approved"));
-        }
+    @Test
+    @SneakyThrows
+    void getOwnerBookings_whenHeaderInvalid_thenReturnBadRequest() {
+        Assertions.assertAll(
+                () -> mockMvc.perform(get("/bookings/owner")
+                                .header(HEADER_USER_ID, -1L))
+                        .andExpect(status().isBadRequest()),
 
-        @Test
-        @SneakyThrows
-        void approveBooking_whenHeaderOrPathInvalid_thenReturnBadRequest() {
-            Assertions.assertAll(
-                    () -> mockMvc.perform(patch("/bookings/{bookingId}", -1L)
-                                    .header(HEADER_USER_ID, 1L)
-                                    .param("approved", "true"))
-                            .andExpect(status().isBadRequest()),
+                () -> mockMvc.perform(get("/bookings/owner")
+                                .header(HEADER_USER_ID, 0L))
+                        .andExpect(status().isBadRequest())
+        );
 
-                    () -> mockMvc.perform(patch("/bookings/{bookingId}", 0L)
-                                    .header(HEADER_USER_ID, 1L)
-                                    .param("approved", "true"))
-                            .andExpect(status().isBadRequest()),
+        verifyNoInteractions(bookingClient);
+    }
 
-                    () -> mockMvc.perform(patch("/bookings/{bookingId}", 1L)
-                                    .header(HEADER_USER_ID, -1L)
-                                    .param("approved", "true"))
-                            .andExpect(status().isBadRequest()),
+    @Test
+    @SneakyThrows
+    void createBooking_whenDtoAndHeaderValid_thenReturnOk() {
 
-                    () -> mockMvc.perform(patch("/bookings/{bookingId}", 1L)
-                                    .header(HEADER_USER_ID, 0L)
-                                    .param("approved", "true"))
-                            .andExpect(status().isBadRequest())
-            );
+        BookingCreateDto dto = BookingCreateDto.builder()
+                .itemId(1L)
+                .start(LocalDateTime.now().plusDays(1))
+                .end(LocalDateTime.now().plusDays(2))
+                .build();
 
-            verifyNoInteractions(bookingClient);
-        }
+        when(bookingClient.createBooking(eq(1L), any()))
+                .thenReturn(ResponseEntity.ok(Map.of("id", 1L)));
+
+        mockMvc.perform(post("/bookings")
+                        .header(HEADER_USER_ID, 1L)
+                        .contentType("application/json")
+                        .content(objectMapper.writeValueAsString(dto)))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.id").value(1L));
+    }
+
+    @Test
+    @SneakyThrows
+    void createBooking_whenDtoInvalid_thenReturnBadRequest() {
+
+        BookingCreateDto nullItem = BookingCreateDto.builder()
+                .itemId(null)
+                .start(LocalDateTime.now().plusDays(1))
+                .end(LocalDateTime.now().plusDays(2))
+                .build();
+
+        BookingCreateDto startPast = BookingCreateDto.builder()
+                .itemId(1L)
+                .start(LocalDateTime.now().minusDays(1))
+                .end(LocalDateTime.now().plusDays(2))
+                .build();
+
+        BookingCreateDto endPast = BookingCreateDto.builder()
+                .itemId(1L)
+                .start(LocalDateTime.now().plusDays(1))
+                .end(LocalDateTime.now().minusDays(1))
+                .build();
+
+        BookingCreateDto allNull = BookingCreateDto.builder().build();
+
+        Assertions.assertAll(
+                () -> mockMvc.perform(post("/bookings")
+                                .header(HEADER_USER_ID, 1L)
+                                .contentType("application/json")
+                                .content(objectMapper.writeValueAsString(nullItem)))
+                        .andExpect(status().isBadRequest()),
+
+                () -> mockMvc.perform(post("/bookings")
+                                .header(HEADER_USER_ID, 1L)
+                                .contentType("application/json")
+                                .content(objectMapper.writeValueAsString(startPast)))
+                        .andExpect(status().isBadRequest()),
+
+                () -> mockMvc.perform(post("/bookings")
+                                .header(HEADER_USER_ID, 1L)
+                                .contentType("application/json")
+                                .content(objectMapper.writeValueAsString(endPast)))
+                        .andExpect(status().isBadRequest()),
+
+                () -> mockMvc.perform(post("/bookings")
+                                .header(HEADER_USER_ID, 1L)
+                                .contentType("application/json")
+                                .content(objectMapper.writeValueAsString(allNull)))
+                        .andExpect(status().isBadRequest())
+        );
+
+        verifyNoInteractions(bookingClient);
+    }
+
+    @Test
+    @SneakyThrows
+    void createBooking_whenHeaderInvalid_thenReturnBadRequest() {
+        BookingCreateDto dto = BookingCreateDto.builder()
+                .itemId(1L)
+                .start(LocalDateTime.now().plusDays(1))
+                .end(LocalDateTime.now().plusDays(2))
+                .build();
+
+        Assertions.assertAll(
+                () -> mockMvc.perform(post("/bookings")
+                                .header(HEADER_USER_ID, -1L)
+                                .contentType("application/json")
+                                .content(objectMapper.writeValueAsString(dto)))
+                        .andExpect(status().isBadRequest()),
+
+                () -> mockMvc.perform(post("/bookings")
+                                .header(HEADER_USER_ID, 0L)
+                                .contentType("application/json")
+                                .content(objectMapper.writeValueAsString(dto)))
+                        .andExpect(status().isBadRequest())
+        );
+
+        verifyNoInteractions(bookingClient);
+    }
+
+    @Test
+    @SneakyThrows
+    void approveBooking_whenHeaderAndPathValid_thenReturnOk() {
+
+        when(bookingClient.approveBooking(1L, 1L, true))
+                .thenReturn(ResponseEntity.ok("approved"));
+
+        mockMvc.perform(patch("/bookings/{bookingId}", 1L)
+                        .header(HEADER_USER_ID, 1L)
+                        .param("approved", "true"))
+                .andExpect(status().isOk())
+                .andExpect(content().string("approved"));
+    }
+
+    @Test
+    @SneakyThrows
+    void approveBooking_whenHeaderOrPathInvalid_thenReturnBadRequest() {
+        Assertions.assertAll(
+                () -> mockMvc.perform(patch("/bookings/{bookingId}", -1L)
+                                .header(HEADER_USER_ID, 1L)
+                                .param("approved", "true"))
+                        .andExpect(status().isBadRequest()),
+
+                () -> mockMvc.perform(patch("/bookings/{bookingId}", 0L)
+                                .header(HEADER_USER_ID, 1L)
+                                .param("approved", "true"))
+                        .andExpect(status().isBadRequest()),
+
+                () -> mockMvc.perform(patch("/bookings/{bookingId}", 1L)
+                                .header(HEADER_USER_ID, -1L)
+                                .param("approved", "true"))
+                        .andExpect(status().isBadRequest()),
+
+                () -> mockMvc.perform(patch("/bookings/{bookingId}", 1L)
+                                .header(HEADER_USER_ID, 0L)
+                                .param("approved", "true"))
+                        .andExpect(status().isBadRequest())
+        );
+
+        verifyNoInteractions(bookingClient);
     }
 }
